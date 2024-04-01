@@ -1,20 +1,58 @@
-package com.example.bmi
+package com.example.user.bmi;
 
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.LocaleList;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.core.content.res.TypedArrayUtils.getText
+import com.example.bmi.R
 
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+import java.text.DecimalFormat;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button button = (Button)findViewById(R.id.button);
+        button.setOnClickListener(calcBMI);
     }
+
+    private View.OnClickListener calcBMI = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DecimalFormat nf = new DecimalFormat("0.00");
+            EditText fieldheight = (EditText)findViewById(R.id.height);
+            EditText fieldweight = (EditText)findViewById(R.id.weight);
+            //身高
+            double height = Double.parseDouble(fieldheight.getText().toString())/100;
+            //體重
+            double weight = Double.parseDouble(fieldweight.getText().toString());
+            //計算出BMI值
+            double BMI = weight / (height*height);
+
+            //結果
+            TextView result = (TextView)findViewById(R.id.result);
+            result.setText(getText(R.string.bmi_result)
+                    + nf.format(BMI));
+
+            //建議
+            TextView fieldsuggest = (TextView)findViewById(R.id.suggest);
+            if(BMI > 25) //太重了
+                fieldsuggest.setText(R.string.advice_heavy);
+            else if(BMI < 20) //太輕了
+                fieldsuggest.setText(R.string.advice_light);
+            else //剛剛好
+                fieldsuggest.setText(R.string.advice_average);
+        }
+    };
 }
